@@ -4,7 +4,7 @@ export const Post = () => {
             <div className="flex items-center text-slate-300 justify-between">
                 <div className="flex items-center ">
                     <div className="w-[28px] h-[28px] bg-slate-300 rounded-full hover:cursor-pointer"></div>
-                    <span className="text-slate-300 ml-2 font-[16px] hover:cursor-pointer">John Doe</span>
+                    <span className="text-slate-300 ml-2 text-[14px] hover:cursor-pointer">John Doe</span>
                 </div>
 
                 <div className="flex justify-items-end hover:cursor-pointer">
