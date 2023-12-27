@@ -1,6 +1,6 @@
 export const CreatePost = () => {
     return (<>
-        <div className="">
+        <div className="mt-2">
             <textarea id="message" rows="3" className="outline-none resize-none border-none block p-2.5 w-full text-sm  bg-[#1e1e1e] text-white rounded-lg " placeholder="Write your thoughts here..."></textarea>
 
             <div className="flex items-center">
