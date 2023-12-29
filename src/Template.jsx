@@ -6,7 +6,7 @@ import { Suggestion } from "./Suggestion";
 import axios from "axios";
 import { PostDataContext } from "./Contexts/PostDataContext";
 import { Posts } from "./Components/Posts";
-// import PostData from "../src/assets/PostData.json";
+// import PostData from "../public/PostData.json";
 
 export const Template = () => {
   const [postData, setPostData] = useState([]);
@@ -20,7 +20,7 @@ export const Template = () => {
   useEffect(() => {
     const getPostData = async () => {
       try {
-        const response = await axios.get('../src/assets/PostData.json'); // Adjust the path accordingly
+        const response = await axios.get('/PostData.json'); // Adjust the path accordingly
         setPostData(response.data);
         // setPost(PostData);
         console.log(response.data);
