@@ -1,11 +1,46 @@
 // import PropTypes from 'prop-types';
-import { useRef, useState, useContext } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import { PostDataContext } from "../Contexts/PostDataContext";
 
 export const PostComponent = (props) => {
     const PostContext = useContext(PostDataContext);
-    const postSlider = useRef(null);
+    // const postSlider = useRef(null);
     const [isLike, setLike] = useState(false);
+    const postSlider = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX - postSlider.current.offsetLeft);
+        setScrollLeft(postSlider.current.scrollLeft);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        const x = e.pageX - postSlider.current.offsetLeft;
+        const walk = (x - startX) * 2; // Adjust the multiplier as needed
+        postSlider.current.scrollLeft = scrollLeft - walk;
+    };
+
+    useEffect(() => {
+        if (postSlider.current) {
+            postSlider.current.addEventListener('mousedown', handleMouseDown);
+            postSlider.current.addEventListener('mouseup', handleMouseUp);
+            postSlider.current.addEventListener('mousemove', handleMouseMove);
+
+            return () => {
+                postSlider.current.removeEventListener('mousedown', handleMouseDown);
+                postSlider.current.removeEventListener('mouseup', handleMouseUp);
+                postSlider.current.removeEventListener('mousemove', handleMouseMove);
+            };
+        }
+    }, [isDragging, startX, scrollLeft]);
     const doLike = async (postId) => {
         const updatedPostData = PostContext.postData.map(item => {
             if (item.postId === postId) {
@@ -44,14 +79,21 @@ export const PostComponent = (props) => {
 
             {
                 props.postPhotos.length > 0 && (
-                    <div ref={postSlider} className="flex overflow-hidden overflow-x-scroll bg-scroll my-2">
+                    <div ref={postSlider} className={`flex overflow-hidden overflow-x-hidden  overflow-y-hidden bg-scroll my-2 ${
+                        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+                      }`}>
                         {props.postPhotos.map((item, index) => (
-                            <div className="relative w-full h-auto flex-shrink-0" key={index}>
+                            <div className="relative w-full h-auto aspect-square flex-shrink-0" key={index}>
                                 <img
-                                    className="w-full h-auto object-cover bg-center"
+                                    className="w-full h-auto object-cover aspect-square bg-center cursor-pointer"
                                     src={item.pic}
                                     alt="photo"
                                     loading="lazy"
+                                    onDoubleClick={() => {
+                                        console.log("double clicked");
+                                        doLike(props.postId)
+                                        setLike(!isLike);
+                                    }}
                                 />
                             </div>
                         ))}
@@ -73,7 +115,7 @@ export const PostComponent = (props) => {
                 <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
             </svg> */}
                 <div className='flex items-center'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" onClick={() => {
+                    <svg xmlns="http://www.w3.org/2000/svg" className={` cursor-pointer  ${isLike && 'text-red-600'}`} width="22" height="22" viewBox="0 0 24 24" onClick={() => {
                         doLike(props.postId)
                         setLike(!isLike);
                     }}>
@@ -84,12 +126,12 @@ export const PostComponent = (props) => {
 
 
                 <div className='flex items-center'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.29117 20.8242L2 22L3.17581 16.7088C2.42544 15.3056 2 13.7025 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C10.2975 22 8.6944 21.5746 7.29117 20.8242ZM7.58075 18.711L8.23428 19.0605C9.38248 19.6745 10.6655 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 13.3345 4.32549 14.6175 4.93949 15.7657L5.28896 16.4192L4.63416 19.3658L7.58075 18.711Z" fill="currentColor"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="cursor-pointer" width="20" height="20" viewBox="0 0 24 24"><path d="M7.29117 20.8242L2 22L3.17581 16.7088C2.42544 15.3056 2 13.7025 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C10.2975 22 8.6944 21.5746 7.29117 20.8242ZM7.58075 18.711L8.23428 19.0605C9.38248 19.6745 10.6655 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 13.3345 4.32549 14.6175 4.93949 15.7657L5.28896 16.4192L4.63416 19.3658L7.58075 18.711Z" fill="currentColor"></path></svg>
                     <span className='ml-1'>{props.commentCount}</span>
                 </div>
 
                 <div className='flex items-center'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M13 14H11C7.54202 14 4.53953 15.9502 3.03239 18.8107C3.01093 18.5433 3 18.2729 3 18C3 12.4772 7.47715 8 13 8V2.5L23.5 11L13 19.5V14ZM11 12H15V15.3078L20.3214 11L15 6.69224V10H13C10.5795 10 8.41011 11.0749 6.94312 12.7735C8.20873 12.2714 9.58041 12 11 12Z" fill="currentColor"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="cursor-pointer" width="20" height="20" viewBox="0 0 24 24"><path d="M13 14H11C7.54202 14 4.53953 15.9502 3.03239 18.8107C3.01093 18.5433 3 18.2729 3 18C3 12.4772 7.47715 8 13 8V2.5L23.5 11L13 19.5V14ZM11 12H15V15.3078L20.3214 11L15 6.69224V10H13C10.5795 10 8.41011 11.0749 6.94312 12.7735C8.20873 12.2714 9.58041 12 11 12Z" fill="currentColor"></path></svg>
                     {/* <span className='ml-1'>{props.commentCount}</span> */}
                 </div>
 

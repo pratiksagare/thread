@@ -39,7 +39,7 @@ export const Template = () => {
           <Navbar />
 
         </div>
-        <div className=" w-full overflow-y-auto webkit-scrollbar:hidden max-w-[425px] md:max-w-[500px]  4xl:border-[#00ff00] h-screen  px-1 py-1 text-white bg-[#1e1e1e]">
+        <div className=" w-full overflow-y-scroll  max-w-[425px] md:max-w-[500px]  4xl:border-[#00ff00] h-screen  px-1 py-1 text-white bg-[#1e1e1e] webkit-scrollbar:w-0">
           <CreatePost />
           <PostDataContext.Provider value={{ postData, setPostData}}>
             <Posts />
