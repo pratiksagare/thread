@@ -9,13 +9,13 @@ export const PostComponent = (props) => {
     const doLike = async (postId) => {
         const updatedPostData = PostContext.postData.map(item => {
             if (item.postId === postId) {
-                item.likeCount = isLike ? item.likeCount + 1 : item.likeCount - 1;
+                item.likeCount = isLike ? item.likeCount - 1 : item.likeCount + 1;
             }
             return item;
         });
 
         PostContext.setPostData(updatedPostData);
-        setLike(!isLike);
+
     }
     return (<>
         <div className="mt-2">
@@ -30,15 +30,33 @@ export const PostComponent = (props) => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" className="text-slate-300 ml-auto" viewBox="0 0 24 24"><path d="M12 3C11.175 3 10.5 3.675 10.5 4.5C10.5 5.325 11.175 6 12 6C12.825 6 13.5 5.325 13.5 4.5C13.5 3.675 12.825 3 12 3ZM12 18C11.175 18 10.5 18.675 10.5 19.5C10.5 20.325 11.175 21 12 21C12.825 21 13.5 20.325 13.5 19.5C13.5 18.675 12.825 18 12 18ZM12 10.5C11.175 10.5 10.5 11.175 10.5 12C10.5 12.825 11.175 13.5 12 13.5C12.825 13.5 13.5 12.825 13.5 12C13.5 11.175 12.825 10.5 12 10.5Z" fill="currentColor"></path></svg>
                 </div>
             </div>
-            {
-                props.postPhotos.length > 0 && <div ref={postSlider} className="flex overflow-hidden overflow-x-scroll bg-scroll ">
+            {/* {
+                props.postPhotos.length > 0 && 
+                <div ref={postSlider} className="flex overflow-hidden overflow-x-scroll bg-scroll ">
                     {
                         props.postPhotos.map((item, index) => {
-                            return <img className='w-full bg-center  h-auto  my-2 empty:bg-slate-300' src={item.pic} alt="photo" key={index} />
+                            return <img className='w-full bg-center object-cover  h-full  my-2 empty:bg-slate-300' src={item.pic} alt="photo" loading="lazy" key={index} />
                         })
                     }
                 </div>
 
+            } */}
+
+            {
+                props.postPhotos.length > 0 && (
+                    <div ref={postSlider} className="flex overflow-hidden overflow-x-scroll bg-scroll">
+                        {props.postPhotos.map((item, index) => (
+                            <div className="relative w-full h-auto flex-shrink-0" key={index}>
+                                <img
+                                    className="w-full h-auto object-cover bg-center"
+                                    src={item.pic}
+                                    alt="photo"
+                                    loading="lazy"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )
             }
             {/* {
                 props.postPhotos.length === 2 && <div className="flex  overflow-y-scroll">
@@ -55,7 +73,10 @@ export const PostComponent = (props) => {
                 <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
             </svg> */}
                 <div className='flex items-center'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" onClick={() => doLike(props.postId)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" onClick={() => {
+                        doLike(props.postId)
+                        setLike(!isLike);
+                    }}>
                         <path d="M16.5 3C19.5376 3 22 5.5 22 9C22 16 14.5 20 12 21.5C9.5 20 2 16 2 9C2 5.5 4.5 3 7.5 3C9.35997 3 11 4 12 5C13 4 14.64 3 16.5 3ZM12.9339 18.6038C13.8155 18.0485 14.61 17.4955 15.3549 16.9029C18.3337 14.533 20 11.9435 20 9C20 6.64076 18.463 5 16.5 5C15.4241 5 14.2593 5.56911 13.4142 6.41421L12 7.82843L10.5858 6.41421C9.74068 5.56911 8.5759 5 7.5 5C5.55906 5 4 6.6565 4 9C4 11.9435 5.66627 14.533 8.64514 16.9029C9.39 17.4955 10.1845 18.0485 11.0661 18.6038C11.3646 18.7919 11.6611 18.9729 12 19.1752C12.3389 18.9729 12.6354 18.7919 12.9339 18.6038Z" fill={isLike ? `red` : `currentColor`}></path>
                     </svg>
                     <span className='ml-1 font-[13px]'>{props.likeCount}</span>
