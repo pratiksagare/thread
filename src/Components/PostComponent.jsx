@@ -44,7 +44,7 @@ export const PostComponent = (props) => {
 
             {
                 props.postPhotos.length > 0 && (
-                    <div ref={postSlider} className="flex overflow-hidden overflow-x-scroll bg-scroll">
+                    <div ref={postSlider} className="flex overflow-hidden overflow-x-scroll bg-scroll my-2">
                         {props.postPhotos.map((item, index) => (
                             <div className="relative w-full h-auto flex-shrink-0" key={index}>
                                 <img
