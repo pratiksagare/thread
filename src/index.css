@@ -6,3 +6,18 @@
   font-family: "ADELIA";
   src: url("../public/fonts/ProximaNovaExtraBold.woff2");
 }
+
+::-webkit-scrollbar {
+  width: 0;
+}
+
+/* For Firefox */
+body {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+/* For Internet Explorer and Edge */
+body {
+  -ms-overflow-style: none;
+}

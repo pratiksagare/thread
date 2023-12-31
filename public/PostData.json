@@ -32,6 +32,12 @@
         "postPhotos": [
             {
                 "pic": "https://images.unsplash.com/photo-1683009427500-71296178737f?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            },
+            {
+                "pic": "https://images.unsplash.com/photo-1482849737880-498de71dda8d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTh8fG1hbGUlMjBpbmRpYW58ZW58MHx8MHx8fDA%3D"
+            },
+            {
+                "pic": "https://images.unsplash.com/photo-1701743805362-86796f50a0c2?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             }
         ],
         "postBody": "Lorem ipsum dolor, sit amet consectetur adipisicing elitLaboriosam molestias culpa fugit aut dicta maiores, autem saepe odit sequi ut! Rerum culpa aliquid nulla quod.",
