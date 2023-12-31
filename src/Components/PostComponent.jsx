@@ -1,5 +1,5 @@
 // import PropTypes from 'prop-types';
-import { useRef, useState, useContext, useEffect } from "react";
+import { useRef, useState, useContext, useEffect, useLayoutEffect } from "react";
 import { PostDataContext } from "../Contexts/PostDataContext";
 
 export const PostComponent = (props) => {
@@ -7,41 +7,10 @@ export const PostComponent = (props) => {
     // const postSlider = useRef(null);
     const [isLike, setLike] = useState(false);
     const postSlider = useRef(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
-
-    const handleMouseDown = (e) => {
-        setIsDragging(true);
-        setStartX(e.pageX - postSlider.current.offsetLeft);
-        setScrollLeft(postSlider.current.scrollLeft);
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    const handleMouseMove = (e) => {
-        if (!isDragging) return;
-        const x = e.pageX - postSlider.current.offsetLeft;
-        const walk = (x - startX) * 2; // Adjust the multiplier as needed
-        postSlider.current.scrollLeft = scrollLeft - walk;
-    };
-
-    useEffect(() => {
-        if (postSlider.current) {
-            postSlider.current.addEventListener('mousedown', handleMouseDown);
-            postSlider.current.addEventListener('mouseup', handleMouseUp);
-            postSlider.current.addEventListener('mousemove', handleMouseMove);
-
-            return () => {
-                postSlider.current.removeEventListener('mousedown', handleMouseDown);
-                postSlider.current.removeEventListener('mouseup', handleMouseUp);
-                postSlider.current.removeEventListener('mousemove', handleMouseMove);
-            };
-        }
-    }, [isDragging, startX, scrollLeft]);
-    const doLike = async (postId) => {
+    const left_btn = useRef(null);
+    const right_btn = useRef(null);
+    const [sliderWidth, setSliderWidth] = useState(0);
+    const doLike = (postId) => {
         const updatedPostData = PostContext.postData.map(item => {
             if (item.postId === postId) {
                 item.likeCount = isLike ? item.likeCount - 1 : item.likeCount + 1;
@@ -52,11 +21,42 @@ export const PostComponent = (props) => {
         PostContext.setPostData(updatedPostData);
 
     }
+
+    useLayoutEffect(() => {
+        const handleResize = () => {
+            if (postSlider.current) {
+                setSliderWidth(postSlider.current.offsetWidth + 8);
+            }
+        };
+
+        handleResize();
+        // Attach the event listener
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            // Detach the event listener on component unmount
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [postSlider]);
+
+    useEffect(() => {
+        if (left_btn.current && right_btn.current) {
+
+
+            left_btn.current.onclick = () => {
+                console.log(sliderWidth);
+                postSlider.current.scrollLeft -= sliderWidth;
+            }
+
+            right_btn.current.onclick = () => {
+                postSlider.current.scrollLeft += sliderWidth;
+            }
+        }
+    }, [left_btn, right_btn, sliderWidth]);
     return (<>
-        <div className="mt-2">
+        <div className="mt-2 ">
             <div className="flex items-center text-slate-300 justify-between">
                 <div className="flex items-center ">
-                    {/* <div className="w-[28px] h-[28px] bg-slate-300 rounded-full hover:cursor-pointer"></div> */}
                     <img className='w-[30px] h-[30px] bg-slate-300 rounded-full hover:cursor-pointer' src={props.userProfilePic} alt="profile_pic" />
                     <span className="text-slate-300 ml-2 text-[14px] hover:cursor-pointer">{props.userName}</span>
                 </div>
@@ -79,41 +79,50 @@ export const PostComponent = (props) => {
 
             {
                 props.postPhotos.length > 0 && (
-                    <div ref={postSlider} className={`flex overflow-hidden overflow-x-hidden  overflow-y-hidden bg-scroll my-2 ${
+                    <div ref={postSlider} className={`flex overflow-hidden overflow-x-hidden items-center  bg-scroll my-2 relative`}>
+                        {/* <div ref={postSlider} className={`flex overflow-hidden overflow-x-scroll   bg-scroll my-2 ${
                         isDragging ? 'cursor-grabbing' : 'cursor-grab'
-                      }`}>
-                        {props.postPhotos.map((item, index) => (
-                            <div className="relative w-full h-auto aspect-square flex-shrink-0" key={index}>
-                                <img
-                                    className="w-full h-auto object-cover aspect-square bg-center cursor-pointer"
-                                    src={item.pic}
-                                    alt="photo"
-                                    loading="lazy"
-                                    onDoubleClick={() => {
-                                        console.log("double clicked");
-                                        doLike(props.postId)
-                                        setLike(!isLike);
-                                    }}
-                                />
-                            </div>
-                        ))}
+                      }`}> */}
+
+
+                        {
+                            props.postPhotos.map((item, index) => (
+                                <div className="relative w-full h-auto aspect-square flex-shrink-0" key={index}>
+                                    <img
+                                        className="w-full h-auto object-cover aspect-square bg-center cursor-pointer"
+                                        src={item.pic}
+                                        alt="photo"
+                                        loading="lazy"
+                                        onDoubleClick={() => {
+                                            console.log("double clicked");
+                                            doLike(props.postId)
+                                            setLike(!isLike);
+                                        }}
+                                    />
+                                </div>
+                            ))
+                        }
+
                     </div>
                 )
             }
-            {/* {
-                props.postPhotos.length === 2 && <div className="flex  overflow-y-scroll">
-                    <img className='w-full h-auto bg-center bg-slate-300 my-2' src={props.postPhotos[0].pic} alt="photo" />
-                    <img className='w-full h-auto bg-center bg-slate-300 my-2' src={props.postPhotos[1].pic} alt="photo" />
-                </div>
-            } */}
-            {/* <img className='w-full h-auto bg-slate-300 my-2' src={props.postPhotos[0].pic} alt="photo" /> */}
-            {/* <img className='w-full h-auto bg-slate-300 my-2' src={props.postPhotos[1].pic} alt="photo" /> */}
-            {/* <div className="w-full h-auto bg-slate-300 my-2"></div> */}
+
+            {
+                props.postPhotos.length > 1 ?
+                    (<div className="flex justify-between items-center z-10 text-slate-300 relative w-full my-2">
+                        <button className="" ref={left_btn}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20ZM12 11H16V13H12V16L8 12L12 8V11Z" fill="currentColor"></path></svg></button>
+                        <div style={{ flex: 1 }}></div>
+                        <button className="" ref={right_btn}><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M12 11V8L16 12L12 16V13H8V11H12ZM12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22C6.48 22 2 17.52 2 12C2 6.48 6.48 2 12 2ZM12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20Z" fill="currentColor"></path></svg></button>
+                    </div>)
+                    : ''
+            }
+
+
+
+
             <div className="flex items-center px-1 py-1  text-slate-300 gap-3">
 
-                {/* <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-heart" viewBox="0 0 16 16">
-                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
-            </svg> */}
+
                 <div className='flex items-center'>
                     <svg xmlns="http://www.w3.org/2000/svg" className={` cursor-pointer  ${isLike && 'text-red-600'}`} width="22" height="22" viewBox="0 0 24 24" onClick={() => {
                         doLike(props.postId)
@@ -135,17 +144,7 @@ export const PostComponent = (props) => {
                     {/* <span className='ml-1'>{props.commentCount}</span> */}
                 </div>
 
-                {/* <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.29117 20.8242L2 22L3.17581 16.7088C2.42544 15.3056 2 13.7025 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C10.2975 22 8.6944 21.5746 7.29117 20.8242ZM7.58075 18.711L8.23428 19.0605C9.38248 19.6745 10.6655 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 13.3345 4.32549 14.6175 4.93949 15.7657L5.28896 16.4192L4.63416 19.3658L7.58075 18.711Z" fill="currentColor"></path></svg> */}
 
-                {/* <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M13 14H11C7.54202 14 4.53953 15.9502 3.03239 18.8107C3.01093 18.5433 3 18.2729 3 18C3 12.4772 7.47715 8 13 8V2.5L23.5 11L13 19.5V14ZM11 12H15V15.3078L20.3214 11L15 6.69224V10H13C10.5795 10 8.41011 11.0749 6.94312 12.7735C8.20873 12.2714 9.58041 12 11 12Z" fill="currentColor"></path></svg> */}
-                {/* <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor" className="bi bi-chat" viewBox="0 0 16 16">
-                <path d="M2.678 11.894a1 1 0 0 1 .287.801 10.97 10.97 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8.06 8.06 0 0 0 8 14c3.996 0 7-2.807 7-6 0-3.192-3.004-6-7-6S1 4.808 1 8c0 1.468.617 2.83 1.678 3.894m-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a9.68 9.68 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
-            </svg>
-
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-share" viewBox="0 0 16 16">
-                <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
-            </svg> */}
-                {/* <span className="text-[12px]">Liked By 100K</span> */}
             </div>
             <div className="text-[14px]">
                 {props.postBody}
@@ -159,7 +158,7 @@ export const PostComponent = (props) => {
                 </span>
             </div>
             <div className="">
-                {/* <input className="outline-none resize-none border-none block  w-full text-sm  bg-[#1e1e1e] text-slate-400 rounded-lg" placeholder="Comment here..."/> */}
+
                 <textarea id="message" rows="2" className="outline-none resize-none border-none block  w-full text-sm  bg-[#1e1e1e] text-white rounded-lg " placeholder="Write Comment here..."></textarea>
             </div>
         </div>
