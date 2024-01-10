@@ -48,7 +48,13 @@ export const CreatePost = () => {
               }}
             >
               {files.map((file) => (
-                <FileCard key={file.id} {...file} onDelete={removeFile} info />
+                <FileCard
+                  key={file.id}
+                  {...file}
+                  onDelete={removeFile}
+                  info
+                  preview
+                />
               ))}
             </div>
           )}
