@@ -1,8 +1,11 @@
 import { FileInputButton, FileCard } from "@files-ui/react";
+import { PostDataContext } from "./Contexts/PostDataContext";
 import axios from "axios";
-import { useState } from "react";
+import { useState,useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { currentUsername } from "./Components/PostComponent";
 export const CreatePost = () => {
+  const PostContext = useContext(PostDataContext);
   const [postBodyTxt, setPostBodyTxt] = useState('');
   // const uuid = uuidv4();
   const [files, setFiles] = useState([]);
@@ -20,6 +23,7 @@ export const CreatePost = () => {
       try {
         await axios
           .put(`https://u8jih4ctnh.execute-api.us-east-1.amazonaws.com/createPost`, {
+            author: currentUsername,
             postId: uuidv4(),
             postBody: postBodyTxt,
             likes: [],
@@ -29,7 +33,8 @@ export const CreatePost = () => {
           })
           .then((response) => {
             // setTodosList(response.data.Items);
-            console.log(response.data)
+            // console.log(response.data)
+            PostContext.setPostData(response.data.Items);
           });
       } catch (error) {
         console.log(error);

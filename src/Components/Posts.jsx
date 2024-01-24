@@ -16,7 +16,7 @@ export const Posts = () => {
     useEffect(() => {
         const getPostData = async () => {
             try {
-                const response = await axios.get('/PostData.json');
+                const response = await axios.get('https://u8jih4ctnh.execute-api.us-east-1.amazonaws.com/posts');
                 setPostData(response.data);
                 // setPost(PostData);
                 console.log(response.data);
@@ -34,7 +34,7 @@ export const Posts = () => {
                 {
                     postData && postData.map((item) => {
                         return (
-                            <PostComponent postId={item.postId} userProfilePic={item.userProfilePic} userName={item.userName} postBody={item.postBody} postPhotos={item.postPhotos} likeCount={item.likeCount} commentCount={item.commentCount} key={item.postId} />
+                            <PostComponent author={item.author} postId={item.postId} userProfilePic={item.userProfilePic} userName={item.userName} postBody={item.postBody} postPhotos={item.postPhotos} likeCount={item.likeCount} commentCount={item.commentCount} key={item.postId} />
                         );
                     })
                 }
